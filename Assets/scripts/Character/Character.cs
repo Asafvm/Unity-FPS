@@ -37,7 +37,7 @@ public sealed class Character : MonoBehaviour
         Rigidbody[] rigidbodies = GetComponentsInChildren<Rigidbody>();
         foreach (Rigidbody rb in rigidbodies)
             rb.isKinematic = state;
-        GetComponent<Rigidbody>().isKinematic = !state;
+        //GetComponent<Rigidbody>().isKinematic = !state;
     }
 
     private void SetColliders(bool state)
@@ -51,7 +51,7 @@ public sealed class Character : MonoBehaviour
         if (bc)
             bc.enabled = !state;
         animator.enabled = !state;
-        GetComponent<Rigidbody>().useGravity = !state;
+        //GetComponent<Rigidbody>().useGravity = !state;
 
     }
 
