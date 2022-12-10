@@ -21,7 +21,7 @@ public class PanelManager : MonoBehaviour
         WinPanel.SetActive(true);
         Time.timeScale = 0;
         Cursor.lockState = CursorLockMode.None;
-        AudioSource.PlayClipAtPoint(audioWin, Camera.main.transform.position);
+        SoundManager.instance.PlaySound(audioWin,.005f);
     }
 
     public void OnLoseRequest()
@@ -29,7 +29,7 @@ public class PanelManager : MonoBehaviour
         LosePanel.SetActive(true);
         Time.timeScale = 0;
         Cursor.lockState = CursorLockMode.None;
-        AudioSource.PlayClipAtPoint(audioLose, Camera.main.transform.position);
+        SoundManager.instance.PlaySound(audioLose, .005f);
     }
 
     public void OnResetRequest()

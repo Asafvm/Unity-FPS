@@ -18,14 +18,14 @@ public class HudManager : MonoBehaviour
 
     private void Start()
     {
-        GameManager gm = FindObjectOfType<GameManager>();
+        if (GameManager.instance == null) return;
         character = GetComponentInParent<Character>();
         notifications.text = "";
         weaponButtons.SetActive(false);
         uiGunaim.SetActive(false);
         uiCenter.SetActive(true);
-        redTeam = gm.redTeamNumber;
-        blueTeam = gm.blueTeamNumber;
+        redTeam = GameManager.instance.redTeamNumber;
+        blueTeam = GameManager.instance.blueTeamNumber;
         
         //activate move input if needed
         if(SystemInfo.deviceType == DeviceType.Handheld)

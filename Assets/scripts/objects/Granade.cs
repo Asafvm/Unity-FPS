@@ -24,7 +24,7 @@ public class Granade : MonoBehaviour
    
         yield  return new  WaitForSeconds(timeToExplode);
         if (explosion)
-            AudioSource.PlayClipAtPoint(explosion, transform.position,1f);
+            AudioSource.PlayClipAtPoint(explosion, transform.position,.01f);
         Destroy(Instantiate(granadeExplosion, transform.position, Quaternion.identity), .5f);
 
 

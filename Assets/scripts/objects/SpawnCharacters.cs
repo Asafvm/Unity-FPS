@@ -10,10 +10,14 @@ public class SpawnCharacters : MonoBehaviour
     [SerializeField] bool team = false;
     private GameObject leader;
 
-
+    /// <summary>
+    /// Spawn teams of characters at 2 opposite sides of the map
+    /// </summary>
     private void Start()
     {
-        GameManager gm = FindObjectOfType<GameManager>();
+        if (GameManager.instance == null) return;
+        GameManager gm = GameManager.instance;
+        
         int members = team ? gm.blueTeamNumber : gm.redTeamNumber;
 
 

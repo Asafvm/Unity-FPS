@@ -14,11 +14,13 @@ public class MenuHandler : MonoBehaviour
     [SerializeField] Button blueButton;
     private int redTeamNumber = 2;
     private int blueTeamNumber = 2;
-
+    [SerializeField] private AudioClip menuMusic;
+    [SerializeField] private AudioClip gameMusic;
 
     private void Start()
     {
         SetTeam(playerTeam);
+        SoundManager.instance.PlayMusic(menuMusic);
             
     }
 
@@ -38,12 +40,14 @@ public class MenuHandler : MonoBehaviour
 
     public void SaveOptions()
     {
-        FindObjectOfType<GameManager>().SetOptions(playerTeam, redTeamNumber, blueTeamNumber);
+        GameManager.instance.SetOptions(playerTeam, redTeamNumber, blueTeamNumber);
     }
 
     public void StartGame()
     {
-        FindObjectOfType<GameManager>().PlayGame();
+        GameManager.instance.PlayGame();
+        SoundManager.instance.PlayMusic(gameMusic);
+
     }
     public void ChooseTeam(bool team)
     {

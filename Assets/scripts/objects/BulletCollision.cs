@@ -14,20 +14,19 @@ public class BulletCollision : MonoBehaviour
     {
 
         int events = GetComponent<ParticleSystem>().GetCollisionEvents(collision, colEvents);
-        Health h = collision.gameObject.GetComponent<Health>();
+        Health healthComponent = collision.gameObject.GetComponent<Health>();
         for (int i = 0; i < events; i++)
         {
-            if (h)
+            if (healthComponent)
             {
-                h.Bleed(colEvents[i].intersection);
-                h.Hit(Mathf.RoundToInt( damage * Random.Range(0.7f,1.2f))); //base damage * random factor
+                healthComponent.Bleed(colEvents[i].intersection);
+                healthComponent.Hit(Mathf.RoundToInt( damage * Random.Range(0.7f,1.2f))); //base damage * random factor
             }
             else
             {
                 Destroy(Instantiate(missEffect, colEvents[i].intersection, Quaternion.LookRotation(colEvents[i].normal)), .5f);
             }
 
-            Debug.Log($"Shot {collision.gameObject.name}: {h} : at {colEvents[i].intersection}");
 
         }
 

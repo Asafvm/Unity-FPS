@@ -16,13 +16,11 @@ public class TouchControl : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
     // Update is called once per frame
     public void OnPointerUp(PointerEventData data)
     {
-        Debug.Log("up" + data.button);
         sprint.GetComponent<ButtonPress>().OnPress(false);
     }
 
     public void OnPointerDown(PointerEventData data)
     {
-        Debug.Log("down" + data.button);
         sprint.GetComponent<ButtonPress>().OnPress(true);
     }
 }

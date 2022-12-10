@@ -17,22 +17,25 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null && instance != this)
-            Destroy(this.gameObject);
-        else
+        if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(instance);
         }
+        
+        else
+            Destroy(gameObject);
+        
     }
 
     public void MainMenu()
     {
+        SoundManager.instance.StopSound();
         SceneManager.LoadScene("MainMenu");
-        Destroy(this.gameObject);
     }
     public void PlayGame()
     {
+        SoundManager.instance.StopSound();
         Time.timeScale = 1f;
         SceneManager.LoadScene("GameScene");
         Cursor.lockState = CursorLockMode.Locked;
@@ -54,23 +57,6 @@ public class GameManager : MonoBehaviour
         this.blueTeamNumber = blueTeamNumber;
     }
 
-
-
-    public void UpdateGameState(GameState state)
-    {
-        switch (state)
-        {
-            case GameState.MainScreen:
-                break;
-            case GameState.Game:
-                break;
-            case GameState.Win:
-                break;
-            case GameState.Lose:
-                break;
-        }
-
-    }
 }
 
 

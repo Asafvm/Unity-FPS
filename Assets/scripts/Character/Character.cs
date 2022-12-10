@@ -13,15 +13,12 @@ public sealed class Character : MonoBehaviour
     AudioSource source;
     Animator animator;
 
-    //[SerializeField] Rigidbody rigidbody;
     public bool _team = false;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-
-        source = GetComponent<AudioSource>();
         animator = GetComponent<Animator>();
+        source = GetComponent<AudioSource>();
         SetRigidbodies(true);
         SetColliders(false);
     }
@@ -37,7 +34,6 @@ public sealed class Character : MonoBehaviour
         Rigidbody[] rigidbodies = GetComponentsInChildren<Rigidbody>();
         foreach (Rigidbody rb in rigidbodies)
             rb.isKinematic = state;
-        //GetComponent<Rigidbody>().isKinematic = !state;
     }
 
     private void SetColliders(bool state)
@@ -51,12 +47,11 @@ public sealed class Character : MonoBehaviour
         if (bc)
             bc.enabled = !state;
         animator.enabled = !state;
-        //GetComponent<Rigidbody>().useGravity = !state;
-
     }
 
     public void OnWalk(float speed)
     {
+        if (source == null) return;
         source.clip = walkSounds[Random.Range(0,walkSounds.Length)];
         source.pitch = speed;
         source.Play();
@@ -65,13 +60,14 @@ public sealed class Character : MonoBehaviour
     public void OnDeath()
     {
         //if not player, turn off ai
-        if (TryGetComponent<CharacterAI>(out CharacterAI ai))
+        if (TryGetComponent(out CharacterAI ai))
             ai.enabled = false;
-        if (TryGetComponent<NavMeshAgent>(out NavMeshAgent nav))
+        if (TryGetComponent(out NavMeshAgent nav))
             nav.enabled = false;
-        if (TryGetComponent<PlayerInput>(out PlayerInput pi))
+        if (TryGetComponent(out PlayerInput pi))
             pi.enabled = false;
 
+        //notify that a character died and specify if it was the player or npc
         FindObjectOfType<HudManager>().OnDeath(Team, GetComponent<PlayerController>() != null);
 
         SetRigidbodies(false);
@@ -80,4 +76,9 @@ public sealed class Character : MonoBehaviour
        
 
     }
+
+    /// <summary>
+    /// Called from animation event. Dummy funciton
+    /// </summary>
+    public void OnThrowGranade() { }
 }

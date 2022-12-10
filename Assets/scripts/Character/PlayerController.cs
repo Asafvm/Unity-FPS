@@ -14,22 +14,25 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject granadePrefab;
     [SerializeField] Transform WeaponContainer;
     [SerializeField] TextMeshProUGUI hintText;
+    [SerializeField] LayerMask pickableLayer;
     private GameObject markedObject;
-    public Transform spine;
     private Animator animator;
-    private Color highlightColor = Color.yellow;
-    Material originalMaterial, tempMaterial;
-    Renderer rend = null;
     private float pickupRange = 5f;
-
+    private bool isPointingAtObject = false;
+    private CharacterController characterController;
     public Vector3 MoveDirection { get; private set; }
 
     public bool IsRunning { get; private set; }
 
+    private void Awake()
+    {
+        animator = GetComponent<Animator>();
+        characterController = GetComponent<CharacterController>();
+    }
     private void Start()
     {
+        characterController.enabled = true;
         hintText.enabled = false;
-        animator = GetComponent<Animator>();
     }
 
     private void Update()
@@ -40,7 +43,6 @@ public class PlayerController : MonoBehaviour
             MoveDirection = Vector3.zero;
             return;
         }
-        // transform.position += MoveDirection * character.MoveSpeed * Time.deltaTime;
 
 
     }
@@ -53,51 +55,20 @@ public class PlayerController : MonoBehaviour
     //highlight specific objects
     private void Inspect()
     {
-        Renderer currRend;
-        RaycastHit hitInfo;
 
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hitInfo, pickupRange))//,6))
+        //check if player pointing at interactable object
+        if (Physics.SphereCast(Camera.main.transform.position, .1f, Camera.main.transform.forward, out RaycastHit hitInfo, pickupRange, pickableLayer))
         {
-            if (hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("Pickable"))
-            {
-                markedObject = hitInfo.collider.gameObject;
-                ShowHint("Interact to pickup");
-                currRend = hitInfo.collider.gameObject.GetComponent<Renderer>();
+            markedObject = hitInfo.collider.gameObject;
+            isPointingAtObject = true;
+            ShowHint("Press E to pickup");
 
-                if (currRend == rend)
-                    return;
-
-                if (currRend && currRend != rend)
-                {
-                    if (rend)
-                    {
-                        rend.sharedMaterial = originalMaterial;
-                    }
-                }
-
-                if (currRend)
-                    rend = currRend;
-                else
-                    return;
-
-                originalMaterial = rend.sharedMaterial;
-
-                tempMaterial = new Material(originalMaterial);
-                rend.material = tempMaterial;
-                rend.material.color = highlightColor;
-            }
-            else
-            {
-                markedObject = null;
-                hintText.enabled = false;
-                if (rend)
-                {
-                    rend.sharedMaterial = originalMaterial;
-                    rend = null;
-                }
-            }
-
+            return;
         }
+
+        isPointingAtObject = false;
+        markedObject = null;
+        ShowHint("");
     }
 
     private void ShowHint(String messege)
@@ -107,18 +78,10 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void LateUpdate()
-    {
-        //spine bend not working
-        // spine.transform.rotation = Quaternion.AngleAxis(lastRotation + rotationValue, Vector3.forward);
-        //Debug.Log($"last: {lastRotation}, current: {rotationValue}");
-    }
-
     public void OnInteract(InputValue value)
     {
-        if (markedObject)
+        if (isPointingAtObject)
         {
-            //Debug.Log($"Picked up {markedObject.name}");
             markedObject.transform.SetParent(WeaponContainer);
             markedObject.GetComponent<Rigidbody>().useGravity = false;
             markedObject.transform.localPosition = Vector3.zero;
@@ -137,14 +100,14 @@ public class PlayerController : MonoBehaviour
     }
     public void OnSprint(InputValue value)
     {
-        IsRunning = value.isPressed;// context.ReadValueAsButton();
+        IsRunning = value.isPressed;
         animator.SetBool("Running", value.isPressed);
     }
 
     public void OnAim(InputValue value)
     {
-        Weapon w = GetComponentInChildren<Weapon>();
-        if (w)
+        Weapon weapon = GetComponentInChildren<Weapon>();
+        if (weapon != null)
             animator.SetBool("AimGun", value.isPressed);
     }
 
@@ -159,15 +122,16 @@ public class PlayerController : MonoBehaviour
 
     public void OnDeath()
     {
-        GetComponent<Animator>().SetBool("isDead", true);
-        CharacterController collider = GetComponent<CharacterController>();
-        if (collider)
-        {
-            collider.radius = 0.1f;
-            collider.height = 0.1f;
-        }
+
+        characterController.radius = 0.1f;
+        characterController.height = 0.1f;
+        
         GetComponent<PlayerInput>().enabled = false;
     }
+
+    /// <summary>
+    /// Called from animation event
+    /// </summary>
     public void OnFireAnimationEvent()
     {
         RaycastHit hit;
@@ -178,10 +142,14 @@ public class PlayerController : MonoBehaviour
         }
 
     }
+
+    /// <summary>
+    /// Called from animation event
+    /// </summary>
     public void OnThrowGranade()
     {
-        Weapon w = GetComponentInChildren<Weapon>();
-        if (w)
+        Weapon weapon = GetComponentInChildren<Weapon>();
+        if (weapon!=null)
         {
             GameObject granade = Instantiate(granadePrefab, WeaponContainer.position, Quaternion.identity);
             Rigidbody rb = granade.GetComponent<Rigidbody>();

@@ -9,11 +9,14 @@ public class WeaponSpawner : MonoBehaviour
     [SerializeField] Weapon weaponPrefab;
     [SerializeField] GameObject[] spawnLocations;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Spawn weapons at random locations. Number of weapons depend on the number of players
+    /// </summary>
     void Start()
     {
+        if (GameManager.instance == null) return;
 
-        int numberOfAgents = FindObjectOfType<GameManager>().Humanoids;
+        int numberOfAgents = GameManager.instance.Humanoids;
         int loc = Mathf.FloorToInt(Random.Range(0, spawnLocations.Length - numberOfAgents));
         Debug.Log($"agents: {numberOfAgents} - loc: {loc}");
         for (int i = loc; i < loc + numberOfAgents; i++)
